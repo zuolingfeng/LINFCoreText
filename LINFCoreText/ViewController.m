@@ -22,7 +22,7 @@
     NSMutableAttributedString *coreText = [[NSMutableAttributedString alloc] initWithString:@"This is a some test for CoreText form Linf.This is a some test for CoreText form Linf.This is a some test for CoreText form Linf\n I am the second line.This is a some test for CoreText form Linf.This is a some test for CoreText form Linf"];
     
     // 设置字体
-    [coreText addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Georgia" size:18.0f] range:NSMakeRange(0, 4)];
+    [coreText addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Georgia" size:18.0f] range:NSMakeRange(0, coreText.length)];
     
     // 设置为斜体
     [coreText addAttribute:NSFontAttributeName value:[UIFont italicSystemFontOfSize:18.0f] range:NSMakeRange(5, 4)];
@@ -38,9 +38,6 @@
     
     // 设置字体颜色
     [coreText addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 4)];
-    
-    // 设置字体
-    [coreText addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Georgia" size:18.0f] range:NSMakeRange(10, 4)];
     
     // 设置空心字
     [coreText addAttribute:NSStrokeWidthAttributeName value:[NSNumber numberWithInt:3] range:NSMakeRange(10, 4)];
@@ -58,31 +55,31 @@
     [dic setObject:[NSNumber numberWithInt:NSUnderlineStyleSingle] forKey:NSUnderlineStyleAttributeName];
     [coreText addAttributes:dic range:NSMakeRange(24, 4)];
     
-    // 设置字体
-    [coreText addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Georgia" size:18.0f] range:NSMakeRange(53, 6)];
-    
     // 创建段落style类
     NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    paragraph.lineSpacing = 30.0f;                                      // 行距
+    paragraph.lineSpacing = 10.0f;                                      // 行距
     paragraph.alignment = NSTextAlignmentLeft;                          // 对齐方式
     paragraph.firstLineHeadIndent = 20.0f;                              // 首行缩进
-    paragraph.headIndent = 10.0f;                                       // 其余行缩进
+    paragraph.headIndent = 0.0f;                                       // 其余行缩进
     paragraph.tailIndent = 0.0f;                                        // 尾部缩进
     paragraph.lineBreakMode = NSLineBreakByWordWrapping;                // 断行方式
     paragraph.maximumLineHeight = 25.0f;                                // 最大行高
     paragraph.minimumLineHeight = 15.0f;                                // 最小行高
     paragraph.paragraphSpacing = 20.0f;                                 // 段距
-    paragraph.paragraphSpacingBefore = 10.0f;                           // 段首空间
+    paragraph.paragraphSpacingBefore = 0.0f;                           // 段首空间
     paragraph.baseWritingDirection = NSWritingDirectionNatural;         // 句子方向
-    paragraph.lineHeightMultiple = 0.6f;                                // 行高倍数因子
+    paragraph.lineHeightMultiple = 0.0f;                                // 行高倍数因子
     [coreText addAttribute:NSParagraphStyleAttributeName value:paragraph range:NSMakeRange(0, coreText.length)];
     
     CGSize size = [UIScreen mainScreen].bounds.size;
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, size.width, size.height)];
-    label.backgroundColor = [UIColor clearColor];
+    // 自动获取coreText所占CGSize
+    CGSize labelSize = [coreText boundingRectWithSize:CGSizeMake(size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil].size;
+    NSLog(@"labelSize:%@", NSStringFromCGSize(labelSize));
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, 20.0f, labelSize.width, labelSize.height)];
+    label.backgroundColor = [UIColor lightGrayColor];
     label.numberOfLines = 0;
-    label.font = [UIFont systemFontOfSize:13.0f];
-    [label setAttributedText:coreText];
+    label.attributedText = coreText;
     [self.view addSubview:label];
 }
 
