@@ -7,8 +7,16 @@
 //
 
 #import "ViewController.h"
+#import "SecondViewController.h"
+#import "ParagraphViewController.h"
 
-@interface ViewController ()
+#define SCREEN_WIDTH    [UIScreen mainScreen].bounds.size.width
+#define SCREEN_HEIGHT   [UIScreen mainScreen].bounds.size.height
+
+@interface ViewController () <UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic, strong) NSArray *dataSource;
+@property (nonatomic, strong) UITableView *tableView;
 
 @end
 
@@ -16,87 +24,99 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"CoreText";
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.tableView];
+}
+
+#pragma mark - lazy loading
+- (NSArray *)dataSource {
+    if (!_dataSource) {
+        _dataSource = @[@"设置字体", @"设置斜体", @"设置删除线", @"设置URL跳转", @"设置下划线", @"设置字符间隔", @"设置字体颜色", @"设置空心字", @"设置自动获取宽高度", @"设置背景色", @"设置阴影", @"设置图文混排", @"设置段落常用属性"];
+    }
+    return _dataSource;
+}
+
+- (UITableView *)tableView{
     
-    // 创建NSMutableAttributedString
-    NSMutableAttributedString *coreText = [[NSMutableAttributedString alloc] initWithString:@"点击我吧(UILabel里面无效，UITextView里面才有效) is a some test for CoreText form Linf.This is a some test for CoreText form Linf.This is a some test for CoreText form Linf\n I am the second line.This is a some test for CoreText form Linf.This is a some test for CoreText form Linf"];
-    
-    // 设置字体
-    [coreText addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Georgia" size:18.0f] range:NSMakeRange(0, coreText.length)];
-    
-    // 设置为斜体
-    [coreText addAttribute:NSFontAttributeName value:[UIFont italicSystemFontOfSize:18.0f] range:NSMakeRange(5, 4)];
-    
-    // 设置删除线 value表示线条粗细
-    [coreText addAttribute:NSStrikethroughStyleAttributeName value:[NSNumber numberWithInt:1] range:NSMakeRange(38, 10)];
-    
-    // 设置删除线颜色
-    [coreText addAttribute:NSStrikethroughColorAttributeName value:[UIColor orangeColor] range:NSMakeRange(38, 10)];
-    
-    // 设置下划线
-    [coreText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:NSMakeRange(0, 4)];
-    
-    // 设置URL跳转 UITextView才有效，UILabel和UITextField里面无效
-    [coreText addAttribute:NSLinkAttributeName value:[NSURL URLWithString:@"http://www.baidu.com"] range:NSMakeRange(0, 4)];
-    
-    // 设置下划线颜色
-    [coreText addAttribute:NSUnderlineColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, 4)];
-    
-    // 设置字符间隔
-    [coreText addAttribute:NSKernAttributeName value:[NSNumber numberWithInt:5.0f] range:NSMakeRange(0, 4)];
-    
-    // 设置字体颜色
-    [coreText addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0, 4)];
-    
-    // 设置空心字
-    [coreText addAttribute:NSStrokeWidthAttributeName value:[NSNumber numberWithInt:3] range:NSMakeRange(10, 4)];
-    
-    // 设置空心字
-    [coreText addAttribute:NSStrokeWidthAttributeName value:[NSNumber numberWithInt:3] range:NSMakeRange(18, 4)];
-    
-    // 设置空心字颜色  注：设置此属性必须先设置为空心字
-    [coreText addAttribute:NSStrokeColorAttributeName value:[UIColor yellowColor] range:NSMakeRange(18, 4)];
-    
-    // 通过字典设置多个属性
-    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-    [dic setObject:[UIColor redColor] forKey:NSForegroundColorAttributeName];
-    [dic setObject:[UIFont italicSystemFontOfSize:18.0f] forKey:NSFontAttributeName];
-    [dic setObject:[NSNumber numberWithInt:NSUnderlineStyleSingle] forKey:NSUnderlineStyleAttributeName];
-    [coreText addAttributes:dic range:NSMakeRange(24, 4)];
-    
-    // 创建段落style类
-    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    paragraph.lineSpacing = 10.0f;                                      // 行距
-    paragraph.alignment = NSTextAlignmentLeft;                          // 对齐方式
-    paragraph.firstLineHeadIndent = 20.0f;                              // 首行缩进
-    paragraph.headIndent = 0.0f;                                        // 其余行缩进
-    paragraph.tailIndent = 0.0f;                                        // 尾部缩进
-    paragraph.lineBreakMode = NSLineBreakByWordWrapping;                // 断行方式
-    paragraph.maximumLineHeight = 25.0f;                                // 最大行高
-    paragraph.minimumLineHeight = 15.0f;                                // 最小行高
-    paragraph.paragraphSpacing = 20.0f;                                 // 段距
-    paragraph.paragraphSpacingBefore = 0.0f;                            // 段首空间
-    paragraph.baseWritingDirection = NSWritingDirectionNatural;         // 句子方向
-    paragraph.lineHeightMultiple = 0.0f;                                // 行高倍数因子
-    [coreText addAttribute:NSParagraphStyleAttributeName value:paragraph range:NSMakeRange(0, coreText.length)];
-    
-    CGSize size = [UIScreen mainScreen].bounds.size;
-    // 自动获取coreText所占CGSize
-    CGSize labelSize = [coreText boundingRectWithSize:CGSizeMake(size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil].size;
-    NSLog(@"labelSize:%@", NSStringFromCGSize(labelSize));
-    
-    UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(0.0f, 300.0f, labelSize.width, labelSize.height)];
-    textView.backgroundColor = [UIColor lightGrayColor];
-    textView.userInteractionEnabled = YES;
-    textView.attributedText = coreText;
-    textView.editable = NO;        //必须禁止输入键盘，否则URL跳转无效
-    [self.view addSubview:textView];
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, 20.0f, labelSize.width, labelSize.height)];
-    label.backgroundColor = [UIColor lightGrayColor];
-    label.userInteractionEnabled = YES;
-    label.numberOfLines = 0;
-    label.attributedText = coreText;
-    [self.view addSubview:label];
+    if (!_tableView) {
+        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT) style:UITableViewStylePlain];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+    }
+    return _tableView;
+}
+
+#pragma mark - UITableView dataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.dataSource.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *identifier = @"coreTextCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    }
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.textLabel.text = self.dataSource[indexPath.row];
+    return cell;
+}
+
+#pragma mark - UITableView delegate
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 44.0f;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == self.dataSource.count - 1) {
+        ParagraphViewController *paragraph = [[ParagraphViewController alloc] init];
+        [self.navigationController pushViewController:paragraph animated:YES];
+    } else {
+        SecondViewController *second = [[SecondViewController alloc] init];
+        second.title = self.dataSource[indexPath.row];
+        switch (indexPath.row) {
+            case 0:
+                second.type = LINF_CORETEXT_TYPE_FONT;
+                break;
+            case 1:
+                second.type = LINF_CORETEXT_TYPE_ITALIC;
+                break;
+            case 2:
+                second.type = LINF_CORETEXT_TYPE_DELETE_LINE;
+                break;
+            case 3:
+                second.type = LINF_CORETEXT_TYPE_JUMP_URL;
+                break;
+            case 4:
+                second.type = LINF_CORETEXT_TYPE_UNDER_LINE;
+                break;
+            case 5:
+                second.type = LINF_CORETEXT_TYPE_KERN;
+                break;
+            case 6:
+                second.type = LINF_CORETEXT_TYPE_FONT_COLOR;
+                break;
+            case 7:
+                second.type = LINF_CORETEXT_TYPE_STROKE;
+                break;
+            case 8:
+                second.type = LINF_CORETEXT_TYPE_CGSIZE;
+                break;
+            case 9:
+                second.type = LINF_CORETEXT_TYPE_BACKGROUND_COLOR;
+                break;
+            case 10:
+                second.type = LINF_CORETEXT_TYPE_SHADOW;
+                break;
+            case 11:
+                second.type = LINF_CORETEXT_TYPE_IMAGE_TEXT;
+                break;
+            default:
+                break;
+        }
+        [self.navigationController pushViewController:second animated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
