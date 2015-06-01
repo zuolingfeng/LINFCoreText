@@ -6,5 +6,5 @@
 v1.1版本更新域2015.6.1
 
 项目截图：
-![image](https://github.com/zuolingfeng/LINFCoreText/master/LINFCoreTextTests/screen1.png)
+![Image 项目截图](http://raw.github.com/zuolingfeng/LINFCoreText/master/LINFCoreTextTests/screen1.png)
 
